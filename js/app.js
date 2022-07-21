@@ -11,7 +11,8 @@ const materialForCube = new THREE.MeshPhongMaterial( { color: 0xffffff } );
 const cube = new THREE.Mesh(geometryForCube, materialForCube);
 const donut = new THREE.Mesh( geometry, material );
 donut.add(cube)
-cube.position.x = 10;
+const x = Number(10);
+cube.position.x = x;
 cube.position.y = 10;
 const axesHelper = new THREE.AxesHelper( 100 );
 const color = 0xFFFFFF;
@@ -22,12 +23,20 @@ scene.add(light);
 scene.add( donut );
 scene.add( axesHelper );
 camera.position.z = 50;
+const domEvents	= new THREEx.DomEvents(camera, renderer.domElement)
 
+function getRandomHexColor(){
+    const randomColor = Math.floor(Math.random()*16777215).toString(16);
+    return `0x${randomColor}`
+}
+domEvents.addEventListener(donut, 'click',event => {
+	donut.material.color.setHex( getRandomHexColor() );
+	cube.material.color.setHex( getRandomHexColor() );
+})
 function animate(time) {
     time *= 0.001;
     donut.rotation.x = time;
     donut.rotation.y = time;
-    donut.position.x = time * 7;
 	requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 }
