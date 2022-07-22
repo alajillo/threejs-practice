@@ -1,42 +1,45 @@
+const LIGHT_COLOR = 0xFFFFFF;
+const INTENSITY = 1;
+const DOOR_COLOR = 0x5B2B09;
+const DOOR_SPEED = 1.5;
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 500 );
 const renderer = new THREE.WebGLRenderer();
+const geometryForDoorLeft = new THREE.BoxGeometry(14,30,2);
+const geometryForDoorRight = new THREE.BoxGeometry(14,30,2);
+const materialForCube = new THREE.MeshPhongMaterial( { color: DOOR_COLOR } );
+const doorLeft = new THREE.Mesh(geometryForDoorLeft, materialForCube);
+const doorRight = new THREE.Mesh(geometryForDoorRight, materialForCube);
+const axesHelper = new THREE.AxesHelper( 500 );
+const light = new THREE.DirectionalLight(LIGHT_COLOR, INTENSITY);
+
 renderer.setSize( window.innerWidth, window.innerHeight, false );
 document.body.appendChild( renderer.domElement );
-const degsToRads = deg => (deg * Math.PI) / 180.0;
-const geometry = new THREE.TorusGeometry( 5, 2, 8, 100 );
-const material = new THREE.MeshPhongMaterial( { color: 0xE633FF } );
-const geometryForCube = new THREE.BoxGeometry(3,3,3);
-const materialForCube = new THREE.MeshPhongMaterial( { color: 0xffffff } );
-const cube = new THREE.Mesh(geometryForCube, materialForCube);
-const donut = new THREE.Mesh( geometry, material );
-donut.add(cube)
-const x = Number(10);
-cube.position.x = x;
-cube.position.y = 10;
-const axesHelper = new THREE.AxesHelper( 100 );
-const color = 0xFFFFFF;
-const intensity = 1;
-const light = new THREE.DirectionalLight(color, intensity);
-light.position.set(-1, 2, 4);
-scene.add(light);
-scene.add( donut );
-scene.add( axesHelper );
-camera.position.z = 50;
-const domEvents	= new THREEx.DomEvents(camera, renderer.domElement)
 
-function getRandomHexColor(){
-    const randomColor = Math.floor(Math.random()*16777215).toString(16);
-    return `0x${randomColor}`
-}
-domEvents.addEventListener(donut, 'click',event => {
-	donut.material.color.setHex( getRandomHexColor() );
-	cube.material.color.setHex( getRandomHexColor() );
-})
-function animate(time) {
-    time *= 0.001;
-    donut.rotation.x = time;
-    donut.rotation.y = time;
+geometryForDoorLeft.translate(-7,0,0)
+geometryForDoorRight.translate(7,0,0)
+
+doorLeft.position.x = 14;
+doorLeft.position.y = 10;
+doorRight.position.x = -14;
+doorRight.position.y = 10;
+camera.position.z = 70;
+camera.position.y = 30;
+
+
+light.position.set(10, 20, 30);
+camera.lookAt(0,0,0)
+scene.add(axesHelper);
+scene.add(doorLeft);
+scene.add(doorRight);
+scene.add(light);
+
+function animate() {
+    if(doorLeft.rotation.y < 1.53){
+    doorLeft.rotateY(DOOR_SPEED * 0.01)
+    doorRight.rotateY(DOOR_SPEED * 0.01 * -1)
+    }
 	requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 }
